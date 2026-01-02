@@ -1,0 +1,20 @@
+priority: 0
+colorHue: 0.5
+id: ts33_force_enemy_portrait_overlays
+ver: 0.1
+url:
+includesConfigOverrides: false
+includesConfigEdits: false
+includesConfigTrees: false
+includesLibraries: true
+includesTextures: false
+includesLocalizationEdits: false
+includesLocalizations: false
+includesAssetBundles: false
+gameVersionMin: 1.0
+gameVersionMax:
+gameVersion2Compatible: true
+name: Force Enemy Portrait Overlays
+desc: |
+  Forces overlays to be used for the enemy units etc (e.g., player-controlled green allied units). Selects a random portrait-overlay-image that is not in use by any other unit in the battle (where feasible).
+  (Not covered by this mod: Adding overlay-portrait images. Use other mods for that; see 'Sample: 2D Portraits' for one example/starting point.)
