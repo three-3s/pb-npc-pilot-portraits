@@ -1,0 +1,140 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+namespace PhantomBrigade.Data
+{
+	// Token: 0x02001335 RID: 4917
+	public class PilotPropLevelOverlayVariant : PilotPropLevels, IPilotPropLevels
+	{
+	[...]
+		// Token: 0x0600715B RID: 29019 RVA: 0x0028180C File Offset: 0x0027FA0C
+		public override void OffsetLevelKey(DataBlockPilotAppearance appearance, bool forward)
+		{
+			if (appearance == null)
+			{
+				return;
+			}
+			DataContainerSettingsPilot data = DataLinker<DataContainerSettingsPilot>.data;
+			string currentLevelKey = this.GetCurrentLevelKey(appearance);
+			string shiftedKey = data.GetShiftedKey<DataBlockOverlayVariant>(currentLevelKey, forward, false, data.overlayVariants, null);
+			appearance.portraitVariant = shiftedKey;
+		}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+namespace PhantomBrigade.Data
+{
+	// Token: 0x0200140B RID: 5131
+	public class DataBlockPilotAppearance
+	{
+	[...]
+
+		// Token: 0x060072DC RID: 29404 RVA: 0x0028827C File Offset: 0x0028647C
+		public void CopyFrom(DataBlockPilotAppearance source)
+		{
+			if (source == null)
+			{
+				return;
+			}
+			this.version = source.version;
+			this.model = source.model;
+			this.heightOffset = source.heightOffset;
+			this.skinMain = source.skinMain;
+			this.skinOverlay = source.skinOverlay;
+			this.skinTintPreset = source.skinTintPreset;
+			this.eyesTintPreset = source.eyesTintPreset;
+			this.eyesIrisPreset = source.eyesIrisPreset;
+			this.lipsTintPreset = source.lipsTintPreset;
+			this.makeupPatternKey = source.makeupPatternKey;
+			this.makeupColorVariantKey = source.makeupColorVariantKey;
+			this.pilotSuitColorVariant = source.pilotSuitColorVariant;
+			this.hairMain = source.hairMain;
+			this.hairFacial = source.hairFacial;
+			this.hairMainTintPreset = source.hairMainTintPreset;
+			this.hairFacialTintPreset = source.hairFacialTintPreset;
+			this.hairEyebrows = source.hairEyebrows;
+			this.accessoryHeadTop = source.accessoryHeadTop;
+			this.accessoryHeadTopVariant = source.accessoryHeadTopVariant;
+			this.accessoryHeadFront = source.accessoryHeadFront;
+			this.accessoryHeadFrontVariant = source.accessoryHeadFrontVariant;
+			this.blendPresetArchetype = source.blendPresetArchetype;
+			this.portrait = source.portrait;                     // !!!!!!!!!!
+			this.portraitVariant = source.portraitVariant;       // !!!!!!!!!!
+			this.cameraAnglePreset = source.cameraAnglePreset;
+			if (this.blendAppearanceCustomization != null)
+			{
+				this.blendAppearanceCustomization.Clear();
+			}
+			if (source.blendAppearanceCustomization != null && source.blendAppearanceCustomization.Count > 0)
+			{
+				foreach (KeyValuePair<string, int> keyValuePair in source.blendAppearanceCustomization)
+				{
+					if (keyValuePair.Value != 0)
+					{
+						if (this.blendAppearanceCustomization == null)
+						{
+							this.blendAppearanceCustomization = new Dictionary<string, int>();
+						}
+						this.blendAppearanceCustomization[keyValuePair.Key] = keyValuePair.Value;
+					}
+				}
+			}
+			if (source.blendShapes == null || source.blendShapes.Count <= 0)
+			{
+				if (this.blendShapes != null)
+				{
+					this.blendShapes.Clear();
+				}
+				return;
+			}
+			if (this.blendShapes == null)
+			{
+				this.blendShapes = new List<DataBlockPilotBlendShape>(source.blendShapes);
+				return;
+			}
+			this.blendShapes.Clear();
+			this.blendShapes.AddRange(source.blendShapes);
+		}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+namespace PhantomBrigade.Data
+{
+	// Token: 0x02001417 RID: 5143
+	[Serializable]
+	public class DataContainerSettingsPilot : DataContainerUnique
+	{
+	[...]
+
+		// Token: 0x06007303 RID: 29443 RVA: 0x00289904 File Offset: 0x00287B04
+		public void RandomizePilotAppearance(DataBlockPilotAppearance data, bool friendly, string modelKeyOverride = null)
+		
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+namespace PhantomBrigade.Data
+{
+	// Token: 0x02001142 RID: 4418
+	public static class PilotUtility
+	{
+	[...]
+
+		// Token: 0x06006CF5 RID: 27893 RVA: 0x0026C440 File Offset: 0x0026A640
+		public static void RandomizePilotAppearance(PersistentEntity pilot)
+		{
+			if (pilot == null || !pilot.isPilotTag)
+			{
+				return;
+			}
+			bool flag = CombatUIUtility.IsFactionFriendly(pilot.faction.s);
+			DataBlockPilotAppearance dataBlockPilotAppearance = (pilot.hasPilotAppearance ? pilot.pilotAppearance.data : new DataBlockPilotAppearance());
+			DataLinker<DataContainerSettingsPilot>.data.RandomizePilotAppearance(dataBlockPilotAppearance, flag, null);
+			pilot.ReplacePilotAppearance(dataBlockPilotAppearance);
+			dataBlockPilotAppearance.persistentIDLinked = pilot.id.id;
+		}
