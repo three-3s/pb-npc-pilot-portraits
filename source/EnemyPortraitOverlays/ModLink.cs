@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-// USAGE NOTES:
+// INTRODUCTION / USAGE NOTES:
 //  - The project's reference to 'System' must point to the Phantom Brigade one, not Microsoft.
 //    It was necessary to add
 //    C:\Program Files(x86)\Steam\steamapps\common\Phantom Brigade\PhantomBrigade_Data\Managed\
@@ -15,10 +15,15 @@ using Debug = UnityEngine.Debug;
 //  - Harmony.Debug = true + FileLog.Log (and FlushBuffer) goes to desktop harmony.log.txt
 //  - Ask a chatbot:
 //     - How to use eg dnSpy to decompile & search the Phantom Brigade C# module assemblies.
-//     - General info about the 'Entitas' Entity Component System
+//     - General info about the 'Entitas' Entity Component System.
 //     - Explain what the HarmonyPatch things are.
+//  - Note that modding this game via C# has some significant overlap with some other heavily
+//    modded games such as RimWorld (another Unity game (+HarmonyLib)).
+//  - Other basic getting-started info:
+//     - https://github.com/BraceYourselfGames/PB_ModSDK/wiki/Mod-system-overview#libraries
+//     - https://wiki.braceyourselfgames.com/en/PhantomBrigade/Modding/ModSystem
 //
-//  - Image notes: 
+//  - Image notes:
 //     - Use the Mods\my_mod_name\Textures\UI\PilotPortraits\*.png location, in line with
 //       the 'Sample: 2D Portraits' mod. 256x256 resolution. Use RGB format without alpha,
 //       since even having an alpha channel (even fully opaque) seems to cause the game to
