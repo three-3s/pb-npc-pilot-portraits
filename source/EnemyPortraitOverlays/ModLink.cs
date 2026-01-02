@@ -59,8 +59,8 @@ namespace ModExtensions
     //+================================================================================================+
     public class Patches
     {
-        public static readonly string ally_overlay_variant_str = "ts33.ally_overlay";
-        public static readonly string enemy_overlay_variant_str = "ts33.enemy_overlay";
+        //public static readonly string ally_overlay_variant_str = "ts33.ally_overlay";
+        //public static readonly string enemy_overlay_variant_str = "ts33.enemy_overlay";
 
         //-------------------------------------------------------------------------------------------
         // "Dear Harmony, please call into this InitLogic class whenever GameController.Initialize() runs"
@@ -73,17 +73,17 @@ namespace ModExtensions
             {
                 //Debug.Log(message: $"my mod :: InitLogic :: Postfix()");
 
-                DataContainerSettingsPilot settings_pilot = DataLinker<DataContainerSettingsPilot>.data;
-                DataBlockOverlayVariant ally = new DataBlockOverlayVariant();  // (colorize as: green)
-                DataBlockOverlayVariant enemy = new DataBlockOverlayVariant(); // (colorize as: red)
-                ally.filterColor.r = 0.3f;
-                ally.filterColor.g = 1.0f;
-                ally.filterColor.b = 0.4f;
-                enemy.filterColor.r = 1.0f;
-                enemy.filterColor.g = 0.3f;
-                enemy.filterColor.b = 0.3f;
-                settings_pilot.overlayVariants.Add(ally_overlay_variant_str, ally);
-                settings_pilot.overlayVariants.Add(enemy_overlay_variant_str, enemy);
+                //DataContainerSettingsPilot settings_pilot = DataLinker<DataContainerSettingsPilot>.data;
+                //DataBlockOverlayVariant ally = new DataBlockOverlayVariant();  // (colorize as: green)
+                //DataBlockOverlayVariant enemy = new DataBlockOverlayVariant(); // (colorize as: red)
+                //ally.filterColor.r = 0.3f;
+                //ally.filterColor.g = 1.0f;
+                //ally.filterColor.b = 0.4f;
+                //enemy.filterColor.r = 1.0f;
+                //enemy.filterColor.g = 0.3f;
+                //enemy.filterColor.b = 0.3f;
+                //settings_pilot.overlayVariants.Add(ally_overlay_variant_str, ally);
+                //settings_pilot.overlayVariants.Add(enemy_overlay_variant_str, enemy);
 
                 //DataBlockOverlayVariant test = new DataBlockOverlayVariant();
                 //test.filterInputs.x = 0.2f; // something to do with bloom? also: 1,1,1=white just colorizes the image as white (ie, it's not a color-multiply, it's a desaturate-then-multiply, ie "colorize")
@@ -119,6 +119,7 @@ namespace ModExtensions
                 //  - Invent some scheme to mark portraits as only for hostiles, or only for allies, or only
                 //    for player's pilots, or only for bosses, etc.
                 //    (Tanks vs mech? Do the cruise missles still exist / have a pilot portrait? Bosses?)
+                //  - Not sure the red-colorize is necessary, and may be undesirable for some people. (Config option?)
 
                 bool had_portrait = (!data.portrait.IsNullOrEmpty()); // (not sure this will ever be relevant; maybe for other mods)
                 if (!had_portrait)
@@ -147,7 +148,11 @@ namespace ModExtensions
 
                     // ('friendly' seems to be based on CombatUIUtility.IsFactionFriendly(pilot.faction.s))
                     data.portrait = portraits.GetRandomEntry();
-                    data.portraitVariant = (friendly) ? ally_overlay_variant_str : enemy_overlay_variant_str;
+
+                    // (I'd originally wanted to only partially colorize the image. Fully colorizing is
+                    // too heavy-handed, and seems unnecessary given the surrounding red colors used around
+                    // enemy pilot portraits in combat.)
+                    //data.portraitVariant = (friendly) ? ally_overlay_variant_str : enemy_overlay_variant_str;
                 }
             }//func
         }//class PortraitRandomizer
