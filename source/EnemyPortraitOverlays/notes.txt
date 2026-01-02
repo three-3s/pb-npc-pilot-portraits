@@ -114,7 +114,6 @@ namespace PhantomBrigade.Data
 		public void RandomizePilotAppearance(DataBlockPilotAppearance data, bool friendly, string modelKeyOverride = null)
 		
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,4 +136,28 @@ namespace PhantomBrigade.Data
 			DataLinker<DataContainerSettingsPilot>.data.RandomizePilotAppearance(dataBlockPilotAppearance, flag, null);
 			pilot.ReplacePilotAppearance(dataBlockPilotAppearance);
 			dataBlockPilotAppearance.persistentIDLinked = pilot.id.id;
+		}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+namespace PhantomBrigade.Data
+{
+	// Token: 0x02001335 RID: 4917
+	public class PilotPropLevelOverlayVariant : PilotPropLevels, IPilotPropLevels
+	{
+	[...]
+
+		// Token: 0x0600715B RID: 29019 RVA: 0x0028180C File Offset: 0x0027FA0C
+		public override void OffsetLevelKey(DataBlockPilotAppearance appearance, bool forward)
+		{
+			if (appearance == null)
+			{
+				return;
+			}
+			DataContainerSettingsPilot data = DataLinker<DataContainerSettingsPilot>.data;
+			string currentLevelKey = this.GetCurrentLevelKey(appearance);
+			string shiftedKey = data.GetShiftedKey<DataBlockOverlayVariant>(currentLevelKey, forward, false, data.overlayVariants, null);
+			appearance.portraitVariant = shiftedKey;
 		}
