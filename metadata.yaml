@@ -16,5 +16,5 @@ gameVersionMax:
 gameVersion2Compatible: true
 name: Force Enemy Portrait Overlays
 desc: |
-  Forces overlays to be used for the enemy units etc (e.g., player-controlled green allied units). Selects a random portrait-overlay-image that is not in use by any other unit in the battle (where feasible).
+  Forces pilot-overlays to be used for the enemy & allied units etc (including player-controlled green allied units): Selects a random portrait-overlay-image that is not in use by any other unit in the battle (where feasible). The built-in (i.e., non-portrait) overlays are excluded.
   (Not covered by this mod: Adding overlay-portrait images. Use other mods for that; see 'Sample: 2D Portraits' for one example/starting point.)

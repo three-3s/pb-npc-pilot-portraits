@@ -1,8 +1,11 @@
-﻿using HarmonyLib;
+﻿using Entitas;
+using HarmonyLib;
 using PhantomBrigade;
 using PhantomBrigade.Data;
 using PhantomBrigade.Mods;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -13,7 +16,7 @@ using Debug = UnityEngine.Debug;
 //    to the project's Reference Paths, which unfortunately isn't stored in the .csproj.
 //  - Debug.Log goes to LocalLow/Brace.../.../Player.log
 //  - Harmony.Debug = true + FileLog.Log (and FlushBuffer) goes to desktop harmony.log.txt
-//  - Ask a chatbot:
+//  - You may want to read more about (or ask a chatbot about):
 //     - How to use eg dnSpy to decompile & search the Phantom Brigade C# module assemblies.
 //     - General info about the 'Entitas' Entity Component System.
 //     - Explain what the HarmonyPatch things are.
@@ -39,6 +42,7 @@ namespace ModExtensions
     //  leftover 'hello world' stuff at this point.)
     public class ModLinkCustom : ModLink
     {
+#if false
         public static ModLinkCustom ins;
 
         public override void OnLoadStart()
@@ -52,6 +56,7 @@ namespace ModExtensions
             base.OnLoad(harmonyInstance);
             //Debug.Log($"OnLoad | Mod: {modID} | Index: {modIndexPreload} | Path: {modPath}");
         }
+#endif
     }//class
 
     //+================================================================================================+
@@ -59,38 +64,25 @@ namespace ModExtensions
     //+================================================================================================+
     public class Patches
     {
-        //public static readonly string ally_overlay_variant_str = "ts33.ally_overlay";
-        //public static readonly string enemy_overlay_variant_str = "ts33.enemy_overlay";
+        private static IGroup<PersistentEntity> groupPilots;
+        private static List<PersistentEntity> pilotsBuffer = new List<PersistentEntity>();
+        static readonly Regex regex_built_in_pilot_overlays = new Regex("^pilot_overlay_[0-9][0-9]$");
+        static List<string> avail_portraits = new List<string>(); // (scratch space)
 
         //-------------------------------------------------------------------------------------------
         // "Dear Harmony, please call into this InitLogic class whenever GameController.Initialize() runs"
         [HarmonyPatch(typeof(GameController), MethodType.Normal), HarmonyPatch("Initialize")]
         public class InitLogic
         {
-            // "Dear Harmony, please call this Postfix() function after that GameController.Initialize() runs"
+            // "Dear Harmony, please call this AfterInitialize() function AFTER that GameController.Initialize() runs"
             [HarmonyPostfix]
-            public static void Postfix()
+            public static void AfterInitialize()
             {
                 //Debug.Log(message: $"my mod :: InitLogic :: Postfix()");
-
-                //DataContainerSettingsPilot settings_pilot = DataLinker<DataContainerSettingsPilot>.data;
-                //DataBlockOverlayVariant ally = new DataBlockOverlayVariant();  // (colorize as: green)
-                //DataBlockOverlayVariant enemy = new DataBlockOverlayVariant(); // (colorize as: red)
-                //ally.filterColor.r = 0.3f;
-                //ally.filterColor.g = 1.0f;
-                //ally.filterColor.b = 0.4f;
-                //enemy.filterColor.r = 1.0f;
-                //enemy.filterColor.g = 0.3f;
-                //enemy.filterColor.b = 0.3f;
-                //settings_pilot.overlayVariants.Add(ally_overlay_variant_str, ally);
-                //settings_pilot.overlayVariants.Add(enemy_overlay_variant_str, enemy);
-
-                //DataBlockOverlayVariant test = new DataBlockOverlayVariant();
-                //test.filterInputs.x = 0.2f; // something to do with bloom? also: 1,1,1=white just colorizes the image as white (ie, it's not a color-multiply, it's a desaturate-then-multiply, ie "colorize")
-                //test.filterInputs.x = 0.4f;
-                //test.filterInputs.x = 0.6f;
-                //test.filterInputs.x = 0.8f;
-                //settings_pilot.overlayVariants.Add("ts33.test", test);
+                if (groupPilots == null)
+                {
+                    groupPilots = Contexts.sharedInstance.persistent.GetGroup(PersistentMatcher.AllOf(PersistentMatcher.PilotTag).NoneOf(PersistentMatcher.Destroyed));
+                }
             }
         }//func
 
@@ -104,32 +96,42 @@ namespace ModExtensions
         [HarmonyPatch(typeof(DataContainerSettingsPilot), MethodType.Normal), HarmonyPatch("RandomizePilotAppearance")]
         public class PortraitRandomizer
         {
-            static bool log_dump = false;
-
-            // "Dear Harmony, please call this RandomizePilotAppearance() function after that DataContainerSettingsPilot.RandomizePilotAppearance() runs"
+            // "Dear Harmony, please call this AfterRandomizePilotAppearance() function AFTER that DataContainerSettingsPilot.RandomizePilotAppearance() runs"
             [HarmonyPostfix]
-            public static void RandomizePilotAppearance(DataBlockPilotAppearance data, bool friendly, string modelKeyOverride = null)
+            public static void AfterRandomizePilotAppearance(DataBlockPilotAppearance data, bool friendly, string modelKeyOverride = null)
             {
-                // Possible improvements:
-                //  - Exclude the built-in pilot_overlay01..08.
-                //  - Avoid duplicates with any other units in the combat.
-                //  - Avoid duplicates with any player pilots (including not in combat).
-                //  - Further avoid duplicates by cycling thru portraits in a random order, rather than risk eg
+                // Possible improvements (probably not worth the effort):
+                //  - Reduce duplicates across combats by cycling thru portraits in a random order, to help avoid
                 //    using the same portrait two combats in a row, or if one unit dies and reinforcements arrive.
+                //    (Push encountered images onto a static queue, and try to take the next non-duplicate from the
+                //    queue when we run out? Ideally maybe any KIA portraits would also be on cooldown or lockout.)
                 //  - Invent some scheme to mark portraits as only for hostiles, or only for allies, or only
-                //    for player's pilots, or only for bosses, etc.
-                //    (Tanks vs mech? Do the cruise missles still exist / have a pilot portrait? Bosses?)
-                //  - Not sure the red-colorize is necessary, and may be undesirable for some people. (Config option?)
+                //    for player's pilots, or only for bosses, etc. Tanks vs mech? Do the cruise missles still
+                //    exist / have a pilot portrait? Bosses? E.g., name them starting e=enemy, f=friendly, a=all,
+                //    p=player-only...
+                //    (could be useful if someone wanted consistent uniforms etc, I suppose).
+                //  - In a perfect world, maybe there would be support for multiple frames for each pilot's
+                //    portrait, for idle animatinos & reactions to events/circumstances.
+                //  - In a perfect world, I might experiment with partial-colorization 'overlay variants',
+                //    e.g., red tint for enemy, green tint for ally. But the built-in overlay-variants support is
+                //    strictly single-hue recolorization, which is a bit too much.
 
-                bool had_portrait = (!data.portrait.IsNullOrEmpty()); // (not sure this will ever be relevant; maybe for other mods)
-                if (!had_portrait)
+                bool had_portrait = (!data.portrait.IsNullOrEmpty());
+                if (had_portrait)
                 {
-                    List<string> portraits = TextureManager.GetExposedTextureKeys(TextureGroupKeys.PilotPortraits);
+                    // no action. (not sure this will ever be relevant. maybe if some other mod assigns overlays.)
+                }
+                else {
+                    List<string> all_portrait_textures = TextureManager.GetExposedTextureKeys(TextureGroupKeys.PilotPortraits);
+                    avail_portraits.Clear();
+                    avail_portraits.AddRange(all_portrait_textures);
 
+#if false
+                    ../static bool log_dump = false;
                     if (log_dump)
                     {
                         log_dump = false;
-                        foreach (string s in portraits)
+                        foreach (string s in avail_portraits)
                         {
                             // The below log cmd lists entries like f-001, f-002, etc.
                             // Seems to reflect my Mods\TS33_portraits\Textures\UI\PilotPortraits\*.png file naming (minus the .png).
@@ -145,14 +147,25 @@ namespace ModExtensions
                             Debug.Log($"todo.overlayVariant: {kv.Key}");
                         }
                     }
+#endif
 
-                    // ('friendly' seems to be based on CombatUIUtility.IsFactionFriendly(pilot.faction.s))
-                    data.portrait = portraits.GetRandomEntry();
+                    // Exclude the built-in (non-portrait) pilot_overlay_01..08.
+                    avail_portraits.RemoveAll(regex_built_in_pilot_overlays.IsMatch);
 
-                    // (I'd originally wanted to only partially colorize the image. Fully colorizing is
-                    // too heavy-handed, and seems unnecessary given the surrounding red colors used around
-                    // enemy pilot portraits in combat.)
-                    //data.portraitVariant = (friendly) ? ally_overlay_variant_str : enemy_overlay_variant_str;
+                    List<PersistentEntity> all_pilots = groupPilots.GetEntities(pilotsBuffer);
+                    foreach (PersistentEntity pilot in all_pilots)
+                    {
+                        if (pilot.hasPilotAppearance)
+                        {
+                            avail_portraits.Remove(pilot.pilotAppearance.data.portrait);
+                        }
+                    }
+
+                    // Assign a random portrait from the remaining (non-duplicate) portraits
+                    if (avail_portraits.Count > 0)
+                    {
+                        data.portrait = avail_portraits.GetRandomEntry();
+                    }
                 }
             }//func
         }//class PortraitRandomizer
