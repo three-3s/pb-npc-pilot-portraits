@@ -21,9 +21,9 @@ Steam Workshop page: https://steamcommunity.com/sharedfiles/filedetails/?id=3638
 
 Find an existing mod.
 
-"Sample: 2D Portraits" (https://steamcommunity.com/sharedfiles/filedetails/?id=3270976290) is one example. That can also be used as a starting point for making your own set of pilot portraits (just drop new 256x256 RGB-without-alpha images into the right folder; you can even download that mod, then cut-and-paste it from its folder C:\Program Files (x86)\Steam\steamapps\workshop\content\553540, to your local mods folder C:\Users\YourID\AppData\Local\PhantomBrigade\Mods\your-new-mod).
+"Sample: 2D Portraits" (https://steamcommunity.com/sharedfiles/filedetails/?id=3270976290) is one example. That can also be used as a starting point for making your own set of pilot portraits (just drop new 256x256 RGB-without-alpha .png images into the right folder; you can  download that mod, then cut-and-paste it from its folder C:\Program Files (x86)\Steam\steamapps\workshop\content\553540, to your local mods folder C:\Users\YourID\AppData\Local\PhantomBrigade\Mods\your-new-mod).
 
-Note that comms-chatter images are separate but can also be modded. See Phantom Brigade\PhantomBrigade_Data\StreamingAssets\UI\CombatComms (e.g., put replacements in Mods\my_mod_name\Textures\UI\CombatComms\*.png).
+Note that comms-chatter images are separate but can also be modded. See Phantom Brigade\PhantomBrigade_Data\StreamingAssets\UI\CombatComms (e.g., put replacements in Mods\my_mod_name\Textures\UI\CombatComms\\*.png).
 
 
 ### What about save games?
