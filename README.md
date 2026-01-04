@@ -1,4 +1,4 @@
-![example.png](example.png)
+![workshop_preview.png](workshop_preview.png)
 
 
 
@@ -29,3 +29,6 @@ Note that comms-chatter images are separate but can also be modded. See Phantom 
 This mod does not save or load any persistent data. It should work with existing saves, and shouldn't break any saves, including if you deactivate this mod.
 
 (Bonus note: Phantom Brigade saves each pilot's portrait file name. PB seems robust against adding or removing portraits/portrait-mods: PB simply reverts to no-overlay/no-portrait for pilots whose portrait can no longer be found.)
+
+
+![example.png](example.png)
