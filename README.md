@@ -10,6 +10,8 @@ This mod does not itself provide any pilot portraits. This mod is intended to be
 
 Created after Phantom Brigade v2.0.
 
+Steam Workshop page: https://steamcommunity.com/sharedfiles/filedetails/?id=3638762276
+
 
 
 ## Questions & Answers
