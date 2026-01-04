@@ -1,0 +1,24 @@
+workshop:
+  publishedID: 
+  visibility: Private
+  textFromMetadataVersion: true
+  textFromMetadataMain: true
+  title: 
+  description: 
+  internalData: 
+  changes: Initial Steam Workshop upload. (Assigns pilot-portrait to all 'random' pilots (that don't already have a portrait). Avoids using a portrait that's already in use.)
+  tags:
+  - Pilots
+  - UI
+  - PB 2.0
+  - Customization
+  texPreviewUpload: true
+configEdits: 
+textEdits: 
+assetBundles: 
+libraryDLLs:
+  files:
+  - enabled: true
+    relative: true
+    path: source/EnemyPortraitOverlays/obj/Debug/EnemyPortraitOverlays.dll
+extraFiles: 

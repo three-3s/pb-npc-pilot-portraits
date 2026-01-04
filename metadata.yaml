@@ -1,8 +1,8 @@
 priority: 0
-colorHue: 0.5
-id: ts33_force_enemy_portrait_overlays
-ver: 0.1
-url:
+colorHue: 0.336
+id: npc_pilot_portrait_overlays
+ver: 0.3
+url: 
 includesConfigOverrides: false
 includesConfigEdits: false
 includesConfigTrees: false
@@ -11,10 +11,11 @@ includesTextures: false
 includesLocalizationEdits: false
 includesLocalizations: false
 includesAssetBundles: false
-gameVersionMin: 1.0
-gameVersionMax:
 gameVersion2Compatible: true
-name: Force Enemy Portrait Overlays
-desc: |
-  Forces pilot-overlays to be used for the enemy & allied units etc (including player-controlled green allied units): Selects a random portrait-overlay-image that is not in use by any other unit in the battle (where feasible). The built-in (i.e., non-portrait) overlays are excluded.
+gameVersionMin: 1.0
+gameVersionMax: 
+name: Force NPC Portrait Overlays
+desc: >-
+  Assigns pilot-portrait/overlay to every 'random' combat pilot (both enemy & allied). Specifically, selects a random portrait-overlay-image that is not in use by any other pilot. The built-in (i.e., non-portrait) overlays are excluded.
+
   (Not covered by this mod: Adding overlay-portrait images. Use other mods for that; see 'Sample: 2D Portraits' for one example/starting point.)
